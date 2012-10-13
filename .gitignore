@@ -63,3 +63,14 @@ cscope.*
 /onenand_ipl/onenand-ipl*
 /onenand_ipl/board/*/onenand*
 /onenand_ipl/board/*/*.S
+
+#add, they created after build
+*.tmp
+*.bin
+nand_spl/board/samsung/ok6410/cpu_init.S
+nand_spl/board/samsung/ok6410/lowlevel_init.S
+nand_spl/board/samsung/ok6410/nand_boot.c
+nand_spl/board/samsung/ok6410/nand_ecc.c
+nand_spl/board/samsung/ok6410/s3c64xx.c
+nand_spl/board/samsung/ok6410/start.S
+
