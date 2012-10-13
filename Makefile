@@ -3325,6 +3325,21 @@ smdk6400_config	:	unconfig
 		$(MKCONFIG) $(@:_noUSB_config=) arm arm1176 smdk6400 samsung s3c64xx;	\
 	fi
 	@echo "CONFIG_NAND_U_BOOT = y" >> $(obj)include/config.mk
+#add for ok6410
+ok6410_noUSB_config	\
+ok6410_config	:	unconfig
+	@mkdir -p $(obj)include $(obj)board/samsung/ok6410
+	@mkdir -p $(obj)nand_spl/board/samsung/ok6410
+	@echo "#define CONFIG_NAND_U_BOOT" > $(obj)include/config.h
+	@if [ -z "$(findstring ok6410_noUSB_config,$@)" ]; then			\
+		echo "RAM_TEXT = 0x57e00000" >> $(obj)board/samsung/ok6410/config.tmp;\
+		$(MKCONFIG) $(@:_config=) arm arm1176 ok6410 samsung s3c64xx;		\
+	else										\
+		echo "RAM_TEXT = 0xc7e00000" >> $(obj)board/samsung/ok6410/config.tmp;\
+		$(MKCONFIG) $(@:_noUSB_config=) arm arm1176 ok6410 samsung s3c64xx;	\
+	fi
+	@echo "CONFIG_NAND_U_BOOT = y" >> $(obj)include/config.mk
+
 
 #========================================================================
 # i386
