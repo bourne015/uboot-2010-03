@@ -200,6 +200,22 @@ mmu_disable_phys:
 	 */
 	bl	lowlevel_init		/* go setup pll,mux,memory */
 
+	/* when we already run in ram, we don't need to relocate U-Boot.
+	* and actually, memory controller must be configured before U-Boot
+	* is running in ram.
+	*/
+	ldr r0, =0xff000fff
+	bic r1, pc, r0 /* r0 <- current base addr of code */
+	ldr r2, _TEXT_BASE /* r1 <- original base addr in ram */
+	bic r2, r2, r0 /* r0 <- current base addr of code */
+	cmp r1, r2
+	beq after_copy
+
+	#ifdef CONFIG_BOOT_NAND
+	mov r0, #0x1000
+	bl copy_from_nand
+	#endif
+	
 after_copy:
 #ifdef CONFIG_ENABLE_MMU
 enable_mmu:
@@ -280,6 +296,55 @@ _mmu_table_base:
  *
  * void	theLastJump(void *kernel, int arch_num, uint boot_params);
  */
+
+/*
+* copy U-Boot to SDRAM and jump to ram (from NAND or OneNAND)
+* r0: size to be compared
+* Load 1'st 2blocks to RAM because U-boot's size is larger than 1block(128k) size
+*/
+
+.globl copy_from_nand
+copy_from_nand:
+
+	mov r10, lr	/* save return address */
+
+	mov r9, r0
+	/* get ready to call C functions */
+	ldr sp, _TEXT_PHY_BASE /* setup temp stack pointer */
+	sub sp, sp, #12
+	mov fp, #0
+	/* no previous frame, so fp=0 */
+	mov r9, #0x1000
+	bl copy_uboot_to_ram
+
+3:
+	tst	r0, #0x0
+	bne copy_failed
+
+	ldr r0, =0x0c000000
+	ldr r1, _TEXT_PHY_BASE
+
+1:
+	ldr r3, [r0], #4
+	ldr r4, [r1], #4
+	teq r3, r4
+	bne compare_failed /* not matched */
+	subs r9, r9, #4
+	bne 1b
+
+4:
+	mov lr, r10
+	mov pc, lr	/* all is OK */
+
+copy_failed:
+	nop /* copy from nand failed */
+	b copy_failed
+
+compare_failed:
+	nop /* compare failed */
+	b compare_failed
+
+
 #ifdef CONFIG_ENABLE_MMU
 	.globl theLastJump
 theLastJump:
