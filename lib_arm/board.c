@@ -270,12 +270,15 @@ init_fnc_t *init_sequence[] = {
 
 void start_armboot (void)
 {
+	volatile unsigned long *gpmcon = (volatile unsigned long *)0x7F008820;
+	volatile unsigned long *gpmdat = (volatile unsigned long *)0x7F008824;
 	init_fnc_t **init_fnc_ptr;
 	char *s;
 #if defined(CONFIG_VFD) || defined(CONFIG_LCD)
 	unsigned long addr;
 #endif
-
+	*gpmcon = 0x1111;
+	*gpmdat = 0xb;
 	/* Pointer is writable since we allocated a register for it */
 	gd = (gd_t*)(_armboot_start - CONFIG_SYS_MALLOC_LEN - sizeof(gd_t));
 	/* compiler optimization barrier needed for GCC >= 3.4 */

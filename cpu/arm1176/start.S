@@ -205,17 +205,17 @@ mmu_disable_phys:
 	* is running in ram.
 	*/
 	ldr r0, =0xff000fff
-	bic r1, pc, r0 /* r0 <- current base addr of code */
-	ldr r2, _TEXT_BASE /* r1 <- original base addr in ram */
-	bic r2, r2, r0 /* r0 <- current base addr of code */
+	bic r1, pc, r0
+	ldr r2, _TEXT_BASE 
+	bic r2, r2, r0
 	cmp r1, r2
 	beq after_copy
 
-	#ifdef CONFIG_BOOT_NAND
+#ifdef CONFIG_BOOT_NAND
 	mov r0, #0x1000
 	bl copy_from_nand
-	#endif
-	
+#endif
+
 after_copy:
 #ifdef CONFIG_ENABLE_MMU
 enable_mmu:
@@ -288,32 +288,23 @@ _mmu_table_base:
 	.word mmu_table
 #endif
 
-#ifndef CONFIG_NAND_SPL
-/*
- * we assume that cache operation is done before. (eg. cleanup_before_linux())
- * actually, we don't need to do anything about cache if not use d-cache in
- * U-Boot. So, in this function we clean only MMU. by scsuh
- *
- * void	theLastJump(void *kernel, int arch_num, uint boot_params);
- */
-
 /*
 * copy U-Boot to SDRAM and jump to ram (from NAND or OneNAND)
 * r0: size to be compared
 * Load 1'st 2blocks to RAM because U-boot's size is larger than 1block(128k) size
 */
 
-.globl copy_from_nand
+	.globl copy_from_nand
 copy_from_nand:
 
-	mov r10, lr	/* save return address */
+	mov r10, lr
 
 	mov r9, r0
-	/* get ready to call C functions */
-	ldr sp, _TEXT_PHY_BASE /* setup temp stack pointer */
+
+	ldr sp, _TEXT_PHY_BASE
 	sub sp, sp, #12
 	mov fp, #0
-	/* no previous frame, so fp=0 */
+
 	mov r9, #0x1000
 	bl copy_uboot_to_ram
 
@@ -328,23 +319,30 @@ copy_from_nand:
 	ldr r3, [r0], #4
 	ldr r4, [r1], #4
 	teq r3, r4
-	bne compare_failed /* not matched */
+	bne compare_failed
 	subs r9, r9, #4
 	bne 1b
 
 4:
 	mov lr, r10
-	mov pc, lr	/* all is OK */
+	mov pc, lr
 
 copy_failed:
-	nop /* copy from nand failed */
+	nop 
 	b copy_failed
 
 compare_failed:
-	nop /* compare failed */
+	nop
 	b compare_failed
 
-
+#ifndef CONFIG_NAND_SPL
+/*
+ * we assume that cache operation is done before. (eg. cleanup_before_linux())
+ * actually, we don't need to do anything about cache if not use d-cache in
+ * U-Boot. So, in this function we clean only MMU. by scsuh
+ *
+ * void	theLastJump(void *kernel, int arch_num, uint boot_params);
+ */
 #ifdef CONFIG_ENABLE_MMU
 	.globl theLastJump
 theLastJump:

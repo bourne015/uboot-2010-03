@@ -53,14 +53,14 @@ lowlevel_init:
 
 	/* LED on only #8 */
 	ldr	r0, =ELFIN_GPIO_BASE
-	ldr	r1, =0x55540000
-	str	r1, [r0, #GPNCON_OFFSET]
+	ldr	r1, =0x55541111
+	str	r1, [r0, #GPMCON_OFFSET]
 
 	ldr	r1, =0x55555555
-	str	r1, [r0, #GPNPUD_OFFSET]
+	str	r1, [r0, #GPMPUD_OFFSET]
 
-	ldr	r1, =0xf000
-	str	r1, [r0, #GPNDAT_OFFSET]
+	ldr	r1, =0xf001
+	str	r1, [r0, #GPMDAT_OFFSET]
 
 	/* Disable Watchdog */
 	ldr	r0, =0x7e000000		@0x7e004000

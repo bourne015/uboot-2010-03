@@ -32,6 +32,7 @@
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
+#define virt_to_phys(x)		virt_to_phy_ok6410(x)
 /*
  * High Level Configuration Options
  * (easy to change)
