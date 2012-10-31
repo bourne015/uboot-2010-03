@@ -170,9 +170,11 @@ cpu_init_crit:
 	bic	r0, r0, #0x00000087	@ clear bits 7, 2:0 (B--- -CAM)
 	orr	r0, r0, #0x00000002	@ set bit 2 (A) Align
 	orr	r0, r0, #0x00001000	@ set bit 12 (I) I-Cache
+	mcr	p15,0,r0,c1,c0,0
 	/* Prepare to disable the MMU */
-	adr	r1, mmu_disable_phys
+//	adr	r1, mmu_disable_phys
 	/* We presume we're within the first 1024 bytes */
+/*
 	and	r1, r1, #0x3fc
 	ldr	r2, _TEXT_PHY_BASE
 	ldr	r3, =0xfff00000
@@ -181,15 +183,18 @@ cpu_init_crit:
 	b	mmu_disable
 
 	.align 5
-	/* Run in a single cache-line */
+*/	/* Run in a single cache-line */
+/*
 mmu_disable:
 	mcr	p15, 0, r0, c1, c0, 0
 	nop
 	nop
 	mov	pc, r2
+*/
 #endif
 
-mmu_disable_phys:
+//mmu_disable_phys:
+
 	/* Peri port setup */
 	ldr	r0, =0x70000000
 	orr	r0, r0, #0x13
@@ -199,7 +204,6 @@ mmu_disable_phys:
 	 * Go setup Memory and board specific bits prior to relocation.
 	 */
 	bl	lowlevel_init		/* go setup pll,mux,memory */
-
 	/* when we already run in ram, we don't need to relocate U-Boot.
 	* and actually, memory controller must be configured before U-Boot
 	* is running in ram.
@@ -215,6 +219,12 @@ mmu_disable_phys:
 	mov r0, #0x1000
 	bl copy_from_nand
 #endif
+
+/*	adr	r0, _start
+	ldr	r1, _TEXT_BASE
+	ldr	r2, =CONFIG_SYS_UBOOT_SIZE
+	bl	nand2ddr
+*/
 
 after_copy:
 #ifdef CONFIG_ENABLE_MMU

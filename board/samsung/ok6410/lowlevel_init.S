@@ -260,6 +260,34 @@ uart_asm_init:
 	ldr	r0, =ELFIN_GPIO_BASE
 	ldr	r1, =0x220022
 	str	r1, [r0, #GPACON_OFFSET]
+
+	/*set uart to int mode*/
+	ldr	r0, =ELFIN_UART_BASE
+	ldr	r1, =0x3
+	str	r1, [r0, #ULCON_OFFSET]
+
+	ldr	r1, =0x5
+	orr	r1, r1, #0x200
+	str	r1, [r0, #UCON_OFFSET]
+
+#ifdef ENABLE_FIFO
+	ldr	r1, =0x7
+	orr	r1, r1, #0x40
+	str	r1, [r0, #UFCON_OFFSET]
+#else
+	ldr	r1, =0x0
+	str	r1, [r0, #UFCON_OFFSET]
+#endif	
+
+	ldr	r1, =0x0
+	str	r1, [r0, #UMCON_OFFSET]
+
+	ldr	r1, =35
+	str	r1, [r0, #UBRDIV_OFFSET]
+
+	ldr	r1, =0x1
+	str	r1, [r0, #UDIVSLOT_OFFSET]
+	
 	mov	pc, lr
 #endif
 
