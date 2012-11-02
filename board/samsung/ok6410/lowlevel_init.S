@@ -298,12 +298,17 @@ uart_asm_init:
 nand_asm_init:
 	ldr	r0, =ELFIN_NAND_BASE
 	ldr	r1, [r0, #NFCONF_OFFSET]
-	orr	r1, r1, #0x70
-	orr	r1, r1, #0x7700
+//	orr	r1, r1, #0x70
+//	orr	r1, r1, #0x7700
+	orr	r1, r1, #0x10
+	orr	r1, r1, #0x200
 	str	r1, [r0, #NFCONF_OFFSET]
 
 	ldr	r1, [r0, #NFCONT_OFFSET]
 	orr	r1, r1, #0x07
+	str	r1, [r0, #NFCONT_OFFSET]
+
+	and	r1, r1, #0xfffeffff
 	str	r1, [r0, #NFCONT_OFFSET]
 
 	mov	pc, lr
