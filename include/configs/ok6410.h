@@ -29,10 +29,12 @@
  * MA 02111-1307 USA
  */
 
+//#define CONFIG_NAND_BOOT	1
+#define DEBUG	1
 #ifndef __CONFIG_H
 #define __CONFIG_H
 
-#define virt_to_phys(x)		virt_to_phy_ok6410(x)
+#define virt_to_phys(x)		virt_to_phy_smdk6400(x)
 /*
  * High Level Configuration Options
  * (easy to change)
@@ -163,17 +165,17 @@
  **********************************/
 
 /*#define CONFIG_CLK_667_133_66*/
-#define CONFIG_CLK_533_133_66
-/*
-#define CONFIG_CLK_400_100_50
+/*#define CONFIG_CLK_533_133_66*/
+
+//#define CONFIG_CLK_400_100_50
 #define CONFIG_CLK_400_133_66
-#define CONFIG_SYNC_MODE
-*/
+//#define CONFIG_SYNC_MODE
+
 
 /* SMDK6400 has 2 banks of DRAM, but we use only one in U-Boot */
 #define CONFIG_NR_DRAM_BANKS	1
 #define PHYS_SDRAM_1		CONFIG_SYS_SDRAM_BASE	/* SDRAM Bank #1	*/
-#define PHYS_SDRAM_1_SIZE	0x10000000	/* 512 MB in Bank #1	*/
+#define PHYS_SDRAM_1_SIZE	0x10000000	/* 256 MB in Bank #1	*/
 
 #define CONFIG_SYS_FLASH_BASE		0x10000000
 #define CONFIG_SYS_MONITOR_BASE	0x00000000
@@ -203,7 +205,7 @@
  * SMDK6400 board specific data
  */
 
-#define CONFIG_IDENT_STRING	" for SMDK6400"
+#define CONFIG_IDENT_STRING	" for OK6410"
 
 /* base address for uboot */
 #define CONFIG_SYS_PHY_UBOOT_BASE	(CONFIG_SYS_SDRAM_BASE + 0x07e00000)
